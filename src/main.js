@@ -6,7 +6,11 @@ import TabMenu from 'primevue/tabmenu';
 import InputText from 'primevue/inputtext';
 import Card from 'primevue/card';
 import Dialog from 'primevue/dialog';
-
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';   // optional
+import Row from 'primevue/row'; 
+import Checkbox from 'primevue/checkbox';
 
 //theme
 import "primevue/resources/themes/nano/theme.css";     
@@ -23,5 +27,10 @@ app.component('TabMenu',TabMenu);
 app.component('InputText',InputText);
 app.component('Card',Card);
 app.component('Dialog',Dialog);
+app.component('DataTable',DataTable);
+app.component('Column',Column);
+app.component('ColumnGroup',ColumnGroup);
+app.component('Row',Row);
+app.component('Checkbox',Checkbox);
 app.use(PrimeVue);
 app.mount('#app')

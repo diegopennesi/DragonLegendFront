@@ -1,4 +1,4 @@
-<template>
+<template class="bk">
   
 <img src="./assets/logoDl.png">
 <hr>
@@ -6,6 +6,7 @@
 <menuprincipale></menuprincipale>
 
 </div>
+
 
 </template>
 

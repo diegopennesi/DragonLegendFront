@@ -6,17 +6,21 @@
 </div>
 <div>
   <apritavolo v-if="apriTavoloShow"></apritavolo>
-  <p v-if="gestisciTavoloShow"> gestisciTavoloShow</p>
-  <p v-if="saldatavoloShow"> saldatavoloShow</p>
+  <gestisciTavolo v-if="gestisciTavoloShow"></gestisciTavolo>
+  <saldatavolo v-if="saldatavoloShow"></saldatavolo>
 </div>
 </template>
 
 <script lang="js">
 import apritavolo from './apriTavolo.vue';
+import gestisciTavolo from './gestisciTavolo.vue';
+import saldatavolo from './saldaTavolo.vue';
   export default  {
     name: 'menuprincipale',
  components:{
-  apritavolo
+  apritavolo,
+  gestisciTavolo,
+  saldatavolo
  },
     props: [],
     mounted () {
@@ -68,5 +72,6 @@ import apritavolo from './apriTavolo.vue';
   .button{
     margin-left: 4px;
     margin-right: 4px;
+    margin-bottom: 4px;
   }
 </style>

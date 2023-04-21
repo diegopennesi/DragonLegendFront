@@ -10,15 +10,17 @@
     </template>
     <template #title> Apri un tavolo </template>
     <template #content>
-<div class="inner">
+      <div calass="inner">
+<div >
   <InputText type="text" v-model="nomeTavolo" placeholder="Nome Tavolo"/>
 </div>
-<div class="inner">
+<div >
   <InputText type="text" v-model="extraInfo" placeholder="Extra info"/>
+</div>
 </div>
     </template>
     <template #footer>
-        <Button icon="pi pi-check" label="Save" @click="save()" />
+        <Button icon="pi pi-check" label="Save" @click="saveT()" />
         <Button icon="pi pi-times" label="Cancel" severity="secondary" style="margin-left: 0.5em" @click="reset()"/>
     </template>
 </Card>
@@ -30,7 +32,7 @@ import axios from 'axios';
     name: 'apritavolo',
     props: [],
     mounted () {
-
+      
     },
     data () {
       return {
@@ -38,7 +40,8 @@ import axios from 'axios';
           extraInfo:"",
           visible:false,
           headerModal:"",
-          bodyModal:""
+          bodyModal:"",
+          id:"",
       }
     },
     methods: {
@@ -46,11 +49,20 @@ import axios from 'axios';
       this.nomeTavolo = '';
       this.extraInfo = '';
     },
+    saveT(){
+      const data = {
+        nameId: this.nomeTavolo,
+        ordini:true,
+        id:Math.floor(Math.random()*100)+1,
+        extraInfo: this.extraInfo
+      };
+        sessionStorage.setItem('tavolo'+data.id,JSON.stringify(data));
+    },
     save() {
       const url = 'http://localhost:8080/table';
       const headers = {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin':'*',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
         'user': 'SYSADMIN'
       };
       const data = {
@@ -71,7 +83,7 @@ console.log("invio richiesta")
           console.log(error.response.status,error.response.data);
           this.visible = true;
           this.headerModal = error.response.status;
-          this.bodyModal =error.response.data;
+          this.bodyModal =(error.response.status==404)?'Richiesta non raggiungibile':error.response.data;
         });
       
     },
@@ -89,7 +101,7 @@ console.log("invio richiesta")
   margin-top: 40px;
   border: 10px;
   background-color: rgb(236, 236, 236);
-  width: 80%;
+  width: 60%;
   display: inline;
  
 }
@@ -100,7 +112,12 @@ console.log("invio richiesta")
   
 }
 .inner{
+
   padding-top: 5px;
+  padding-left: 30px;
+
+  align-items: center;
+
   
 }
 
