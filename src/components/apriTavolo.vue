@@ -1,8 +1,9 @@
 <template lang="html">
-  <Dialog v-model:visible="visible" :header="`${headerModal}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false">
+  <Dialog v-model:visible="modalvisible" :header="`${headerModal}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false">
     <p class="m-0">
        {{bodyModal}}
     </p>
+    <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false"  />
 </Dialog>
   <div class="outer">
 <Card class="card-component">
@@ -20,7 +21,7 @@
 </div>
     </template>
     <template #footer>
-        <Button icon="pi pi-check" label="Save" @click="saveT()" />
+        <Button icon="pi pi-check" label="Save" @click="save()" />
         <Button icon="pi pi-times" label="Cancel" severity="secondary" style="margin-left: 0.5em" @click="reset()"/>
     </template>
 </Card>
@@ -28,6 +29,7 @@
 </template>
 <script lang="js">
 import axios from 'axios';
+import { setTransitionHooks } from 'vue';
   export default  {
     name: 'apritavolo',
     props: [],
@@ -38,7 +40,7 @@ import axios from 'axios';
       return {
           nomeTavolo:"",
           extraInfo:"",
-          visible:false,
+          modalvisible:false,
           headerModal:"",
           bodyModal:"",
           id:"",
@@ -59,6 +61,8 @@ import axios from 'axios';
         sessionStorage.setItem('tavolo'+data.id,JSON.stringify(data));
     },
     save() {
+      console.log(this.nomeTavolo.length)
+      if(this.nomeTavolo.length>=1 || !this.nomeTavolo===' '){
       const url = 'http://localhost:8080/table';
       const headers = {
         'Content-Type': 'application/json',
@@ -74,18 +78,21 @@ console.log("invio richiesta")
       axios.post(url, data, { headers })
         .then(response => {
           console.log(response);
-          this.visible = true;
+          this.modalvisible = true;
           this.headerModal = response.status;
 
           this.bodyModal ="Aperto tavolo con nome:"+response.data.nameId;
         })
         .catch(error => {
           console.log(error.response.status,error.response.data);
-          this.visible = true;
+          this.modalvisible = true;
           this.headerModal = error.response.status;
           this.bodyModal =(error.response.status==404)?'Richiesta non raggiungibile':error.response.data;
         });
-      
+      }
+          this.modalvisible = true;
+          this.headerModal = "Errore";
+          this.bodyModal ="Non è possibile inviare richiesta con nome tavolo vuota"
     },
     computed: {
 
@@ -100,7 +107,7 @@ console.log("invio richiesta")
 .card-component{
   margin-top: 40px;
   border: 10px;
-  background-color: rgb(236, 236, 236);
+
   width: 60%;
   display: inline;
  

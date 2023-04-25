@@ -38,7 +38,7 @@ import saldatavolo from './saldaTavolo.vue';
         this.apriTavoloShow=true;
         this.gestisciTavoloShow=false;
         this.saldatavoloShow=false;
-        console.log('apriTavoloShow')
+
       },
       gestisciTavolo(){
         this.apriTavoloShow=false;

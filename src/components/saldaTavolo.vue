@@ -1,73 +1,129 @@
 <template>
   <Dialog calss="modal" v-model:visible="modalvisible" :header="`${headerModal}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false">
   <p class="m-0" v-html="bodyModal">
-
   </p>
+  <Button icon="pi pi-check" label="Save" @click="closeTable()" v-if="headerModal=='ok'" />
+  <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false" v-if="headerModal!='ok'" />
   </Dialog>
 <div class="outer">
 <Card class="card-component">
   <template #header>
   </template>
   <template #title> Salda Un Tavolo </template>
-  <template #content>
+  <template #content class="inner">
 <div class="inner">
-  <DataTable :value="tavoliMOK"  :columnClasses='text-right' tableStyle="min-width: 5rem">
-  <Column field="id" header="Id"></Column>
+  <DataTable :value="tavoliMOK"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="getAssociatedOrder">
+  
   <Column field="nameId" header="Nome"></Column>
- 
+  <Column field="extraInfo" header="extra"></Column>
   <Column header="Chiudi Tavolo">
     <template #body="tavoli">
-      <Button :icon="tavoli.data.ordini ?  'pi pi-times':'pi pi-check'" :severity="tavoli.data.ordini ? 'danger':'primary'" text rounded aria-label="Filter" v-model="tavoli.ordini" :binary="true" @click="chiuditavolo(tavoli)" />
+      <Button :icon="!closingTableIsAllowed(tavoli.data.associatedOrder)===true ?  'pi pi-times':'pi pi-check'" :severity="!closingTableIsAllowed(tavoli.data.associatedOrder)===true ? 'danger':'primary'" text rounded aria-label="Filter" v-model="tavoli.associatedOrder" :binary="true" @click="modaleChiudiTavolo(tavoli)" />
       </template>
   </Column>
-
 </DataTable>
-
 </div>
   </template>
-  
 </Card>
 </div>
-
-
-
-
-
-
+<saldaOrdini :currentOrderCopy="currentOrder"></saldaOrdini>
 
 </template>
 
 <script lang="js">
-
 import axios from 'axios';
+import {reactive, toRaw,computed} from 'vue';
+import saldaOrdini from './saldaOrdini.vue';
+
+
+
   export default  {
     name:'saldaTavolo',
+    components:{
+      saldaOrdini
+    },
+    setup(){
+        const state = reactive({
+          currentOrderCopy: [],
+          currentOrder:[]
+        });
+
+        const updateCurrentOrderCopy = () => {
+          state.currentOrderCopy = [...state.currentOrder];
+        };
+        const currentOrderCopy = computed(() => state.currentOrderCopy);
+
+        return {
+          currentOrderCopy,
+          updateCurrentOrderCopy,
+        };
+    },
     props:[],
-    mounted(){
-        const value=JSON.parse(sessionStorage.getItem('tavolo%'));
-        this.tavoliMOK.push(value);
+     mounted(){
+      this.getTableList();
+      
     },
     data (){
         return {
-        tavoliMOK: [
-            { id:1,nameId:'Tavolo1',ordini:false, test:'test'},
-            { id:2,nameId:'Tavolo2',ordini:true,test:'test'},
-            { id:3,nameId:'Tavolo3',ordini:false,test:'test'}
-        ],
+        tavoliMOK: "",
         headerModal:"",
-          bodyModal:"",
-          modalvisible:false,
-
+        bodyModal:"",
+        modalvisible:false,
+        closingTable:"",
         }
     },
     methods:{
-        chiuditavolo(tavolo){
-          this.headerModal=tavolo.data.ordini?"Errore":"ok";
-          this.bodyModal=tavolo.data.ordini?"Impossibile chiudere tavolo, si prega di saldare conti":
+      modaleChiudiTavolo(tavolo){
+          this.headerModal=(!this.closingTableIsAllowed(tavolo.data.associatedOrder)===true)?"Errore":"ok";
+          this.bodyModal=(!this.closingTableIsAllowed(tavolo.data.associatedOrder)===true)?"Impossibile chiudere tavolo, si prega di saldare conti":
           "Vuoi chiudere il tavolo?<br>Confermi?<br>Non potranno più essere eseguite altre operazioni"
+          this.closingTable=tavolo;
           this.modalvisible=true;
-        }
-        }
+        },
+        closeTable(){
+          const url = 'http://localhost:8080/table?nameId='+this.closingTable.data.nameId;
+          const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      console.log("invio richiesta");
+      axios.delete(url,{headers})
+      .then(response=>{
+        this.getTableList();
+        
+      });
+
+      this.modalvisible=false
+        },
+        getTableList(){
+          const url = 'http://localhost:8080/table';
+      const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      console.log("invio richiesta");
+      axios.get(url,{headers})
+      .then(response=>{
+        this.tavoliMOK=response.data
+      })
+        },
+        getAssociatedOrder(event){
+        this.currentOrder=toRaw(event.data.associatedOrder);
+        this.updateCurrentOrderCopy();
+        console.log(this.currentOrder)
+        console.log(this.currentOrderCopy)
+          },
+        closingTableIsAllowed(orderlist){
+            return orderlist.every(order=> order.paid)
+        }  
+        
+      
+    
+        
+        },
+       
     
   }
 </script>
@@ -76,7 +132,7 @@ import axios from 'axios';
     display: flex;
   margin-top: 40px;
   border: 10px;
-  background-color: rgb(236, 236, 236);
+  
   width: 80%;
   display: inline;
  

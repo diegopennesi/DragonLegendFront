@@ -12,8 +12,9 @@ import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row'; 
 import Checkbox from 'primevue/checkbox';
 
+
 //theme
-import "primevue/resources/themes/nano/theme.css";     
+import "primevue/resources/themes/md-dark-indigo/theme.css";     
     
 //core
 import "primevue/resources/primevue.min.css";
