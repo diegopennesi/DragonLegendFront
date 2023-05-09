@@ -1,4 +1,5 @@
 <template>
+
   <Dialog calss="modal" v-model:visible="modalvisible" :header="`${headerModal}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false">
   <p class="m-0" v-html="bodyModal">
   </p>
@@ -26,14 +27,15 @@
   </template>
 </Card>
 </div>
-<saldaOrdini :currentOrderCopy="currentOrder"></saldaOrdini>
+<br>
 
+<saldaOrdini :currentOrderInner="currentOrder2" :currentTableInner="currentTableInner"></saldaOrdini>
 </template>
 
 <script lang="js">
 import axios from 'axios';
 import {reactive, toRaw,computed} from 'vue';
-import saldaOrdini from './saldaOrdini.vue';
+import saldaOrdini from './saldaOrdini.vue';  
 
 
 
@@ -42,22 +44,6 @@ import saldaOrdini from './saldaOrdini.vue';
     components:{
       saldaOrdini
     },
-    setup(){
-        const state = reactive({
-          currentOrderCopy: [],
-          currentOrder:[]
-        });
-
-        const updateCurrentOrderCopy = () => {
-          state.currentOrderCopy = [...state.currentOrder];
-        };
-        const currentOrderCopy = computed(() => state.currentOrderCopy);
-
-        return {
-          currentOrderCopy,
-          updateCurrentOrderCopy,
-        };
-    },
     props:[],
      mounted(){
       this.getTableList();
@@ -65,11 +51,14 @@ import saldaOrdini from './saldaOrdini.vue';
     },
     data (){
         return {
+          test2:[1,2,3],
         tavoliMOK: "",
         headerModal:"",
         bodyModal:"",
         modalvisible:false,
         closingTable:"",
+        currentOrder2:[],
+        currentTableInner:""
         }
     },
     methods:{
@@ -110,10 +99,12 @@ import saldaOrdini from './saldaOrdini.vue';
       })
         },
         getAssociatedOrder(event){
+          this.currentTableInner=(event.data.nameId);
         this.currentOrder=toRaw(event.data.associatedOrder);
-        this.updateCurrentOrderCopy();
+        this.currentOrder2=toRaw(event.data.associatedOrder);
+        console.log("current order")
         console.log(this.currentOrder)
-        console.log(this.currentOrderCopy)
+
           },
         closingTableIsAllowed(orderlist){
             return orderlist.every(order=> order.paid)
