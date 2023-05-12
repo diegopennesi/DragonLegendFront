@@ -10,12 +10,13 @@
   <DataTable :value="currentOrderInner"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="">
   <Column field="itemName" header="Nome"></Column>
   <Column field="extraInfo" header="extraInfo"></Column>
-  <Column header="Salda Oggetto">
+
+  <Column header="Paga">
     <template #body="currentOrderInner">
-      <Button :icon="currentOrderInner.data.paid===true ?  'pi pi-check':'pi pi-times'" :severity="currentOrderInner.data.paid===true ? 'primary':'danger'" text rounded aria-label="Filter" v-model="currentOrderInner.associatedOrder" :binary="true" @click="test('cc')" />
-      <Checkbox v-model="currentOrderInner.data.paid" :binary="true" />
+      <Checkbox  class="inner2" v-model="currentOrderInner.data.paid" :binary="true" />
     </template>
   </Column>
+  <Column field="price" header="price"></Column>
 </DataTable>
 <br>
         <Button icon="pi pi-check" label="Save" @click="save()" />
@@ -30,7 +31,7 @@
 <script lang="js">
 import axios from 'axios';
 import {reactive, toRaw,computed} from 'vue';
-  export default  {
+  export default {
     name: 'salda-ordini',
     props: {currentOrderInner:{type:Array,require:true},currentTableInner:{type:String,require:true}},
     mounted () {
@@ -53,10 +54,10 @@ console.log(x)
       test(){
         console.log(this.currentOrderInner)
       },
-      async  save(){
+       async save(){
         console.log(this.currentTableInner)
         console.log(this.currentOrderInner.id)
-        this.currentOrderInner.forEach(element => {
+        for (const element of this.currentOrderInner){
         const url = 'http://localhost:8080/order/'+this.currentTableInner;
         const headers = {
         'Content-Type': 'application/json',
@@ -66,8 +67,8 @@ console.log(x)
       const data = element //ciclo occhio
       console.log("invio richiesta");
       console.log(toRaw(data));
-       axios.put(url,data,{headers}).then(response=> console.log(response))
-        });
+      await axios.put(url,data,{headers}).then(response=> console.log(response))
+        };
        
 
       }
@@ -81,4 +82,5 @@ console.log(x)
   .salda-ordini {
 
   }
+ 
 </style>

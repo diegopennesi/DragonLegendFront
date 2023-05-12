@@ -80,7 +80,7 @@ import saldaOrdini from './saldaOrdini.vue';
       axios.delete(url,{headers})
       .then(response=>{
         this.getTableList();
-        
+        this.currentOrder2="";
       });
 
       this.modalvisible=false

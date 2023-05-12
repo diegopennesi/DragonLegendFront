@@ -13,7 +13,7 @@
     <template #content>
       <div calass="inner">
 <div >
-  <InputText type="text" v-model="nomeTavolo" placeholder="Nome Tavolo"/>
+  <InputText type="text" v-model="nomeTavolo" placeholder="Nome Tavolo" pattern="^\S*$"/>
 </div>
 <div >
   <InputText type="text" v-model="extraInfo" placeholder="Extra info"/>

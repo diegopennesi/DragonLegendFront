@@ -1,6 +1,6 @@
 <template class="bk">
   
-<img src="./assets/logoDl.png">
+<img src="./assets/logoDl.png" style="max-width: 50%">
 <hr>
 <div>
 <menuprincipale></menuprincipale>
