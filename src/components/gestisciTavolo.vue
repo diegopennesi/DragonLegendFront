@@ -14,20 +14,35 @@
   <template #content class="inner">
 <div class="inner">
   <DataTable :value="tavoliAperti"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="getAssociatedOrder">
-  
   <Column field="nameId" header="Nome"></Column>
   <Column field="extraInfo" header="extra"></Column>
-  <Column header="Chiudi Tavolo">
-    <template #body="tavoli">
-      </template>
-  </Column>
+  <Column header="Inserisci Ordine">
+    <template #body="rowData">
+      <Button label="Inserisci ordine" @click="addnewItem(rowData.data)" />
+
+    </template>
+    </Column>
 </DataTable>
 </div>
   </template>
 </Card>
 </div>
 <br>
-
+<Card class="card-component">
+  <template #header>
+  </template>
+  <template #title> Ordine </template>
+  <template #content class="inner">
+<div class="inner">
+  <DataTable :value="currentOrdergestisciTavolo"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="">
+  <Column field="itemName" header="Nome"></Column>
+  <Column field="count" header="Unità"></Column>
+</DataTable>
+<br>
+        <Button icon="pi pi-check" label="Save" @click="" />
+</div>
+  </template>
+</Card>
 
 </template>
 
@@ -46,7 +61,7 @@ import {reactive, toRaw,computed} from 'vue';
     data (){
       return{
         tavoliAperti: "",
-        currentOrder22:[],
+        currentOrdergestisciTavolo:[],
         currentTableInner2:""
       }
     },
@@ -65,13 +80,27 @@ import {reactive, toRaw,computed} from 'vue';
       })
         },
         getAssociatedOrder(event){
-          this.currentTableInner=(event.data.nameId);
-        this.currentOrder=toRaw(event.data.associatedOrder);
-        this.currentOrder22=toRaw(event.data.associatedOrder);
+        this.currentTableInner=(event.data.nameId);
+        this.recalculateTrueOrderListGestisciTavolo(toRaw(event.data.associatedOrder));
         console.log("current order")
         console.log(this.currentOrder)
-
           },
+          recalculateTrueOrderListGestisciTavolo(items) {
+  const counts = items.reduce((acc, item) => {
+    const key = `${item.itemName} ${item.extraInfo}`;
+    if (!acc[key]) {
+      acc[key] = 0;
+    }
+    acc[key]++;
+    return acc;
+  }, {});
+  this.currentOrdergestisciTavolo= Object.entries(counts).map(([itemName, count]) => ({ itemName, count }));
+  console.log("test")
+  console.log(this.currentOrdergestisciTavolo)
+},
+addnewItem(rowData){
+  console.log(rowData.nameId)
+}
         }
     
   }

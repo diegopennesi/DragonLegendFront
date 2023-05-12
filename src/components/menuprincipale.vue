@@ -2,7 +2,7 @@
 <div class="menuprincipale">
 <Button icon='pi pi-calendar-plus' label="Apri tavolo" class="button" @click="apriTavolo()"></Button>
 <Button icon='pi pi-cart-plus' label="Gestisci Tavolo" class="button" @click="gestisciTavolo()"></Button>
-<Button icon='pi pi-calendar-times' label="Salda tavolo e chiudi" class="button" @click="saldatavolo()"></Button>
+<Button icon='pi pi-calendar-times' label="Salda tavolo" class="button" @click="saldatavolo()"></Button>
 </div>
 <div>
   <apritavolo v-if="apriTavoloShow"></apritavolo>
@@ -73,5 +73,6 @@ import saldatavolo from './saldaTavolo.vue';
     margin-left: 4px;
     margin-right: 4px;
     margin-bottom: 4px;
+    max-width: 50%;
   }
 </style>
