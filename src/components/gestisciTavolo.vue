@@ -1,10 +1,22 @@
 <template>
 
-<Dialog calss="modal" v-model:visible="modalvisible" :header="`${headerModal}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false">
-  <p class="m-0" v-html="bodyModal">
-  </p>
-  <Button icon="pi pi-check" label="Save" @click="closeTable()" v-if="headerModal=='ok'" />
+<Dialog class="modal" v-model:visible="modalvisible" :header="`${headerModal.header}`" :style="{ width: '100%' }" style="display: flex;" :position="'top'" :modal="true" :draggable="false">
+  <p class="m-0" v-html="bodyModal"/>
+  <div>
+  <AutoComplete v-model="searchValue" placeholder="Item name" :suggestions="filtredItems" :optionLabel="itemName" @change="handleOptionSelection"
+ autocomplete="off" @input="search" @click="handleOptionSelection" />
+  <InputText v-model="selectedItemProperties.subchoice"  placeholder="Subchoice" @click="TEST" />
+  <InputText v-model="selectedItemProperties.extraInfo"  placeholder="extraInfo" />
+  <br>
+  <InputText v-model="selectedItemProperties.price" disabled  placeholder="costo" />
+  <InputText v-model="selectedItemProperties.description" disabled  placeholder="descrizione" />
+
+</div>
+  
+<template #footer>
+  <Button icon="pi pi-check" label="Save" @click="closeTable()" v-if="headerModal.header=='ok'" /> <!--che merda-->
   <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false" v-if="headerModal!='ok'" />
+</template>
   </Dialog>
 <div class="outer">
 <Card class="card-component">
@@ -19,7 +31,6 @@
   <Column header="Inserisci Ordine">
     <template #body="rowData">
       <Button label="Inserisci ordine" @click="addnewItem(rowData.data)" />
-
     </template>
     </Column>
 </DataTable>
@@ -49,22 +60,41 @@
 <script lang="js">
 
 import axios from 'axios';
-import {reactive, toRaw,computed} from 'vue';
+import {ref, toRaw,computed,reactive, VueElement } from 'vue';
   export default  {
     
     name:'gestisciTavolo',
     props:[],
     mounted(){ 
+      this.getMenuList();
       this.getTableList();
+
 
     },
     data (){
       return{
         tavoliAperti: "",
         currentOrdergestisciTavolo:[],
-        currentTableInner2:""
+        currentTableInner2:"",
+        modalvisible:false,
+        menuItems:[],
+        headerModal:{'header':"Aggiungi un oggeto","footer":"footer"},
+        searchValue:[],
+        filtredItems:[],
+        selectedItem:ref({}),
+        
       }
     },
+    computed: {
+      selectedItemProperties: {
+    get() {
+      return this.selectedItem.value || {};
+    },
+    set(value) {
+      this.selectedItem.value = value;
+    },
+  },
+  },
     methods:{
       getTableList(){
           const url = 'http://localhost:8080/table';
@@ -77,6 +107,20 @@ import {reactive, toRaw,computed} from 'vue';
       axios.get(url,{headers})
       .then(response=>{
         this.tavoliAperti=response.data
+      })
+        },
+        getMenuList(){
+          const url = 'http://localhost:8080/adm/menuItem';
+          const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      console.log("invio richiesta");
+      axios.get(url,{headers})
+      .then(response=>{
+        this.menuItems=toRaw(response.data)
+        console.log(toRaw(this.menuItems))
       })
         },
         getAssociatedOrder(event){
@@ -100,10 +144,41 @@ import {reactive, toRaw,computed} from 'vue';
 },
 addnewItem(rowData){
   console.log(rowData.nameId)
+  this.modalvisible=true
+  this.headerModal.header=rowData.nameId
+},
+search() {
+  console.log(this.menuItems);
+  setTimeout(()=>{
+  this.filtredItems = this.menuItems.filter(item => {
+    //<!--console.log(item.itemName.toLowerCase().includes(this.searchValue.toLowerCase())+'-'+item.itemName)-->
+    return item.itemName.toLowerCase().includes(this.searchValue.toLowerCase());  
+    })
+    .map(item => item.itemName );
+    console.log(toRaw(this.filtredItems))},50);
+},
+handleOptionSelection(option){
+  const searchProd=(option.value!==undefined)?option.value:this.searchValue;
+ const itemBlank=
+  this.menuItems.filter(item =>{
+  return item.itemName===searchProd
+ 
+ })
+ console.log("oggetto caricato" )
+ console.log(itemBlank[0]);
+ this.selectedItem.value=(itemBlank[0])
+ 
+},
+TEST(){
+  console.log("Subchoice TEST")
+  console.log(this.selectedItemProperties)
+  console.log(this.selectedItemProperties.id)
+  console.log(this.selectedItemProperties.subChoice)
+
 }
-        }
-    
   }
+}
+  
 </script>
 <style scoped lang="scss">
 .card-component{
@@ -128,6 +203,9 @@ addnewItem(rowData){
   align-items: center;
   justify-content: center;
 
+}
+#p-carousel-item p-carousel-item-active p-carousel-item-start p-carousel-item-end{
+  background-color: red;
 }
 .modal{
   display: flex;

@@ -11,6 +11,7 @@ import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row'; 
 import Checkbox from 'primevue/checkbox';
+import AutoComplete from 'primevue/autocomplete';
 
 
 
@@ -34,5 +35,6 @@ app.component('Column',Column);
 app.component('ColumnGroup',ColumnGroup);
 app.component('Row',Row);
 app.component('Checkbox',Checkbox);
+app.component('AutoComplete',AutoComplete); 
 app.use(PrimeVue);
 app.mount('#app')
