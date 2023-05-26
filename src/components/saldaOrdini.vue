@@ -9,7 +9,7 @@
 <div class="inner">
   <DataTable :value="currentOrderInner"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="">
   <Column field="itemName" header="Nome"></Column>
-  <Column field="extraInfo" header="extraInfo"></Column>
+  <Column v-modeldynamicValue field="extraInfo" header="extraInfo"></Column>
 
   <Column header="Paga">
     <template #body="currentOrderInner">
@@ -42,6 +42,11 @@ import {reactive, toRaw,computed} from 'vue';
        
       }
     },
+      computed: {
+    dynamicValue() {
+      return currentOrderInner.extraInfo + currentOrderInner.subChoice
+    }
+  },
     methods: {
 test(x){
 console.log(x)

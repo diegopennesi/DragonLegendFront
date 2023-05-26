@@ -12,6 +12,7 @@ import ColumnGroup from 'primevue/columngroup';   // optional
 import Row from 'primevue/row'; 
 import Checkbox from 'primevue/checkbox';
 import AutoComplete from 'primevue/autocomplete';
+import MultiSelect from 'primevue/multiselect';
 
 
 
@@ -36,5 +37,6 @@ app.component('ColumnGroup',ColumnGroup);
 app.component('Row',Row);
 app.component('Checkbox',Checkbox);
 app.component('AutoComplete',AutoComplete); 
+app.component('MultiSelect',MultiSelect); 
 app.use(PrimeVue);
 app.mount('#app')

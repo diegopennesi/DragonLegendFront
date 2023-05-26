@@ -1,21 +1,35 @@
 <template>
 
-<Dialog class="modal" v-model:visible="modalvisible" :header="`${headerModal.header}`" :style="{ width: '100%' }" style="display: flex;" :position="'top'" :modal="true" :draggable="false">
+<Dialog class="modal" v-model:visible="modalvisible" :header="`Tavolo ${headerModal.header}`" :style="{ width: '100%' }" style="display: flex;" :position="'top'" :modal="true" :draggable="false">
   <p class="m-0" v-html="bodyModal"/>
   <div>
   <AutoComplete v-model="searchValue" placeholder="Item name" :suggestions="filtredItems" :optionLabel="itemName" @change="handleOptionSelection"
- autocomplete="off" @input="search" @click="handleOptionSelection" />
-  <InputText v-model="selectedItemProperties.subchoice"  placeholder="Subchoice" @click="TEST" />
+ autocomplete="off" @input="search" @click="handleOptionSelection" class="w-full md:w-20rem"  />  <Button :icon="'pi pi-times'" :severity="'danger'" text rounded aria-label="Filter"  @click="() => {selectedItemProperties={};searchValue=null;}" />
+  <!--<InputText v-model="selectedItemProperties.subchoice"  placeholder="Subchoice" @click="TEST" />-->
+  <MultiSelect v-model="temp" :options="selectedItemProperties.subChoice"  placeholder="Option"
+    :maxSelectedLabels="3"  />
   <InputText v-model="selectedItemProperties.extraInfo"  placeholder="extraInfo" />
   <br>
-  <InputText v-model="selectedItemProperties.price" disabled  placeholder="costo" />
-  <InputText v-model="selectedItemProperties.description" disabled  placeholder="descrizione" />
+
+  <InputText v-model="selectedItemProperties.price" disabled  placeholder="costo" />   <Button icon="pi pi-check" v-if="this.selectedItemProperties.itemName!=null" label="Aggiungi" @click="addComanda()" /> 
+
+  <DataTable :value="comandalist" :columnClasses='text-right' tableStyle="min-width: 5rem" >
+    <Column header="elimina">
+    <template #body="oggettoComanda">
+      <Button :icon="'pi pi-times'" :severity="'danger'" text rounded aria-label="Filter"  @click="TEST(oggettoComanda.data)" />
+   </template>
+    </Column>
+    <Column field="itemName" header="Nome"></Column>
+    <Column field="subChoice" header="Sub"></Column>
+    <Column field="extraInfo" header="Extra"></Column>
+  </DataTable>
+
 
 </div>
   
 <template #footer>
-  <Button icon="pi pi-check" label="Save" @click="closeTable()" v-if="headerModal.header=='ok'" /> <!--che merda-->
-  <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false" v-if="headerModal!='ok'" />
+  <Button icon="pi pi-check" label="Invia Comanda" @click="postComanda()" /> <!--che merda-->
+  <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false"/>
 </template>
   </Dialog>
 <div class="outer">
@@ -82,6 +96,9 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
         searchValue:[],
         filtredItems:[],
         selectedItem:ref({}),
+        selectedItemComanda:ref({}),
+        comandalist:[],
+        temp:""
         
       }
     },
@@ -91,7 +108,17 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       return this.selectedItem.value || {};
     },
     set(value) {
+
       this.selectedItem.value = value;
+    },
+  },
+  selectedItemComanda: {
+    get() {
+      return this.selectedItemComanda.value || {};
+    },
+    set(value) {
+
+      this.selectedItemComanda.value = value;
     },
   },
   },
@@ -123,6 +150,25 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
         console.log(toRaw(this.menuItems))
       })
         },
+        async postComanda(){
+          for(const ordini of this.comandalist){
+          const url = 'http://localhost:8080/order/'+this.headerModal.header;
+          const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      ordini.extraInfo=ordini.extraInfo+ordini.subChoice
+      const data = ordini
+      console.log("invio richiesta");
+      console.log(ordini);
+      await axios.put(url,data,{headers})
+
+    }
+    this.getMenuList();
+      this.getTableList();
+    this.modalvisible=false
+    },
         getAssociatedOrder(event){
         this.currentTableInner=(event.data.nameId);
         this.recalculateTrueOrderListGestisciTavolo(toRaw(event.data.associatedOrder));
@@ -143,15 +189,17 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
   console.log(this.currentOrdergestisciTavolo)
 },
 addnewItem(rowData){
+  this.comandalist=[]
   console.log(rowData.nameId)
   this.modalvisible=true
   this.headerModal.header=rowData.nameId
+  this.headerModal.visibility=true
 },
 search() {
-  console.log(this.menuItems);
+  console.log(this.menuItems.menuClass);
   setTimeout(()=>{
   this.filtredItems = this.menuItems.filter(item => {
-    //<!--console.log(item.itemName.toLowerCase().includes(this.searchValue.toLowerCase())+'-'+item.itemName)-->
+    return (item.menuClass.toLowerCase().includes(this.searchValue.toLowerCase())!="")?item.menuClass.toLowerCase().includes(this.searchValue.toLowerCase()):item.itemName.toLowerCase().includes(this.searchValue.toLowerCase())
     return item.itemName.toLowerCase().includes(this.searchValue.toLowerCase());  
     })
     .map(item => item.itemName );
@@ -169,14 +217,32 @@ handleOptionSelection(option){
  this.selectedItem.value=(itemBlank[0])
  
 },
-TEST(){
-  console.log("Subchoice TEST")
-  console.log(this.selectedItemProperties)
-  console.log(this.selectedItemProperties.id)
-  console.log(this.selectedItemProperties.subChoice)
-
+addComanda(){
+  if(this.selectedItemProperties.itemName!=null){
+  this.selectedItemComanda= Object.assign({},this.selectedItemProperties)
+  this.selectedItemComanda.subChoice=this.temp
+  this.comandalist.push(this.selectedItemComanda)
+  console.log(this.comandalist)}
+  else{}
+},
+recalculateComanda(items)  {//bisogna standardizzare il codice, è una uility di filtro che deve asservire per più logiche cazzarola!
+  const counts = items.reduce((acc, item) => {
+    const key = `${item.itemName} ${item.extraInfo}`;
+    if (!acc[key]) {
+      acc[key] = 0;
+    }
+    acc[key]++;
+    return acc;
+  }, {});
+  this.currentOrdergestisciTavolo= Object.entries(counts).map(([itemName, count]) => ({ itemName, count }));
+  console.log("test")
+  console.log(this.currentOrdergestisciTavolo)
+          },
+TEST(oggettoComanda){
+  const index = this.comandalist.findIndex(item => item === oggettoComanda);
+  if (index !== -1) {      this.comandalist.splice(index, 1);
 }
-  }
+  }}
 }
   
 </script>
@@ -212,4 +278,8 @@ TEST(){
   text-align: center;
   align-items: center;
   justify-content: center;
+}
+.p-autocomplete .p-autocomplete-loader {
+    right: 1rem;
+    display: none !important
 }</style>
