@@ -4,7 +4,7 @@
   <p class="m-0" v-html="bodyModal"/>
   <div>
   <AutoComplete v-model="searchValue" placeholder="Item name" :suggestions="filtredItems" :optionLabel="itemName" @change="handleOptionSelection"
- autocomplete="off" @input="search" @click="handleOptionSelection" class="w-full md:w-20rem"  />  <Button :icon="'pi pi-times'" :severity="'danger'" text rounded aria-label="Filter"  @click="() => {selectedItemProperties={};searchValue=null;}" />
+ autocomplete="off" @input="search" @click="handleOptionSelection" class="w-full md:w-20rem"  />  <Button :icon="'pi pi-times'" :severity="'danger'" text rounded aria-label="Filter"  @click="() => {selectedItemProperties={};searchValue=null;temp=''}" />
   <!--<InputText v-model="selectedItemProperties.subchoice"  placeholder="Subchoice" @click="TEST" />-->
   <MultiSelect v-model="temp" :options="selectedItemProperties.subChoice"  placeholder="Option"
     :maxSelectedLabels="3"  />
@@ -158,12 +158,11 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
         'user': 'SYSADMIN'
       };
-      ordini.extraInfo=ordini.extraInfo+ordini.subChoice
+      ordini.extraInfo=((ordini.extraInfo!==undefined)?ordini.extraInfo+":":"")+ordini.subChoice
       const data = ordini
       console.log("invio richiesta");
       console.log(ordini);
       await axios.put(url,data,{headers})
-
     }
     this.getMenuList();
       this.getTableList();
@@ -210,7 +209,6 @@ handleOptionSelection(option){
  const itemBlank=
   this.menuItems.filter(item =>{
   return item.itemName===searchProd
- 
  })
  console.log("oggetto caricato" )
  console.log(itemBlank[0]);
@@ -220,7 +218,7 @@ handleOptionSelection(option){
 addComanda(){
   if(this.selectedItemProperties.itemName!=null){
   this.selectedItemComanda= Object.assign({},this.selectedItemProperties)
-  this.selectedItemComanda.subChoice=this.temp
+  this.selectedItemComanda.subChoice=(this.temp!=null)?this.temp:""
   this.comandalist.push(this.selectedItemComanda)
   console.log(this.comandalist)}
   else{}
