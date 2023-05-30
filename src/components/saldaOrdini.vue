@@ -30,6 +30,7 @@
 
 <script lang="js">
 import axios from 'axios';
+import config from '/config.js';
 import {reactive, toRaw,computed} from 'vue';
   export default {
     name: 'salda-ordini',
@@ -39,7 +40,7 @@ import {reactive, toRaw,computed} from 'vue';
     },
     data () {
       return {
-       
+        apiUrl: config.apiUrl,
       }
     },
       computed: {
@@ -63,7 +64,7 @@ console.log(x)
         console.log(this.currentTableInner)
         console.log(this.currentOrderInner.id)
         for (const element of this.currentOrderInner){
-        const url = 'http://localhost:8080/order/'+this.currentTableInner;
+        const url = this.apiUrl+'/order/'+this.currentTableInner;
         const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh

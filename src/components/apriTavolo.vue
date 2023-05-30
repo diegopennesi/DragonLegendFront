@@ -29,7 +29,7 @@
 </template>
 <script lang="js">
 import axios from 'axios';
-import { setTransitionHooks } from 'vue';
+import config from '/config.js'
   export default  {
     name: 'apritavolo',
     props: [],
@@ -38,6 +38,7 @@ import { setTransitionHooks } from 'vue';
     },
     data () {
       return {
+        apiUrl: config.apiUrl,
           nomeTavolo:"",
           extraInfo:"",
           modalvisible:false,
@@ -63,7 +64,7 @@ import { setTransitionHooks } from 'vue';
     save() {
       console.log(this.nomeTavolo.length)
       if(this.nomeTavolo.length>=1 || !this.nomeTavolo===' '){
-      const url = 'http://localhost:8080/table';
+      const url = this.apiUrl+'/table';
       const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh

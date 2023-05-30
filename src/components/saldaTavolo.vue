@@ -34,6 +34,7 @@
 
 <script lang="js">
 import axios from 'axios';
+import config from '/config.js'
 import {reactive, toRaw,computed} from 'vue';
 import saldaOrdini from './saldaOrdini.vue';  
 
@@ -51,7 +52,8 @@ import saldaOrdini from './saldaOrdini.vue';
     },
     data (){
         return {
-          test2:[1,2,3],
+        apiUrl: config.apiUrl,
+        test2:[1,2,3],
         tavoliMOK: "",
         headerModal:"",
         bodyModal:"",
@@ -70,7 +72,7 @@ import saldaOrdini from './saldaOrdini.vue';
           this.modalvisible=true;
         },
         closeTable(){
-          const url = 'http://localhost:8080/table?nameId='+this.closingTable.data.nameId;
+          const url = config.apiUrl+'/table?nameId='+this.closingTable.data.nameId;
           const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
@@ -86,7 +88,7 @@ import saldaOrdini from './saldaOrdini.vue';
       this.modalvisible=false
         },
         getTableList(){
-          const url = 'http://localhost:8080/table';
+          const url = config.apiUrl+'/table';
       const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
@@ -96,6 +98,10 @@ import saldaOrdini from './saldaOrdini.vue';
       axios.get(url,{headers})
       .then(response=>{
         this.tavoliMOK=response.data
+      }).catch(error =>{
+        this.bodyModal=error
+        this.modalvisible=true
+
       })
         },
         getAssociatedOrder(event){

@@ -28,8 +28,8 @@
 </div>
   
 <template #footer>
-  <Button icon="pi pi-check" label="Invia Comanda" @click="postComanda()" /> <!--che merda-->
-  <Button icon="pi pi-check" label="Indietro" @click="modalvisible=false"/>
+  <Button icon="pi pi-check" label="Invia Comanda" text rounded aria-label="Filter" @click="postComanda()" /> <!--che merda-->
+  <Button icon="pi pi-times" label="Indietro" text rounded aria-label="Filter" :severity="'danger'" @click="modalvisible=false"/>
 </template>
   </Dialog>
 <div class="outer">
@@ -44,7 +44,8 @@
   <Column field="extraInfo" header="extra"></Column>
   <Column header="Inserisci Ordine">
     <template #body="rowData">
-      <Button label="Inserisci ordine" @click="addnewItem(rowData.data)" />
+      <Button :icon="'pi pi-plus'" :severity="'primary'" text rounded aria-label="Filter" @click="addnewItem(rowData.data)" />
+      
     </template>
     </Column>
 </DataTable>
@@ -75,6 +76,7 @@
 
 import axios from 'axios';
 import {ref, toRaw,computed,reactive, VueElement } from 'vue';
+import config from '/config.js';
   export default  {
     
     name:'gestisciTavolo',
@@ -87,6 +89,7 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
     },
     data (){
       return{
+        apiUrl: config.apiUrl,
         tavoliAperti: "",
         currentOrdergestisciTavolo:[],
         currentTableInner2:"",
@@ -124,7 +127,7 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
   },
     methods:{
       getTableList(){
-          const url = 'http://localhost:8080/table';
+          const url = this.apiUrl+'/table';
       const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
@@ -137,7 +140,7 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       })
         },
         getMenuList(){
-          const url = 'http://localhost:8080/adm/menuItem';
+          const url = this.apiUrl+'/adm/menuItem';
           const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
@@ -152,7 +155,7 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
         },
         async postComanda(){
           for(const ordini of this.comandalist){
-          const url = 'http://localhost:8080/order/'+this.headerModal.header;
+          const url = this.apiUrl+'/order/'+this.headerModal.header;
           const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
