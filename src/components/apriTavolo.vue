@@ -76,7 +76,7 @@ import config from '/config.js'
       };
       console.log(data);
 console.log("invio richiesta")
-      axios.post(url, data, { headers })
+       axios.post(url, data, { headers })
         .then(response => {
           console.log(response);
           this.modalvisible = true;

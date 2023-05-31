@@ -13,6 +13,7 @@ import Row from 'primevue/row';
 import Checkbox from 'primevue/checkbox';
 import AutoComplete from 'primevue/autocomplete';
 import MultiSelect from 'primevue/multiselect';
+import InputNumber from 'primevue/inputnumber';
 
 
 
@@ -26,6 +27,7 @@ import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
 const app = createApp(App);
+app.component('InputNumber',InputNumber);
 app.component('Button', Button);
 app.component('TabMenu',TabMenu);
 app.component('InputText',InputText);
