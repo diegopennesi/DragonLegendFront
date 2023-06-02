@@ -14,8 +14,14 @@ import Checkbox from 'primevue/checkbox';
 import AutoComplete from 'primevue/autocomplete';
 import MultiSelect from 'primevue/multiselect';
 import InputNumber from 'primevue/inputnumber';
+import { createRouter, createWebHistory } from 'vue-router';
+import { routes } from './routes';
 
-
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  });
+  
 
 //theme
 import "primevue/resources/themes/md-dark-indigo/theme.css";     
@@ -41,4 +47,5 @@ app.component('Checkbox',Checkbox);
 app.component('AutoComplete',AutoComplete); 
 app.component('MultiSelect',MultiSelect); 
 app.use(PrimeVue);
+app.use(router);
 app.mount('#app')

@@ -7,7 +7,7 @@
 <br> <button @click="toggleFullscreen">fullscreen on\off</button>
 <hr>
 <div>
-<menuprincipale></menuprincipale>
+  <router-view></router-view>
 </div>
 </div>
 
