@@ -16,6 +16,7 @@ import MultiSelect from 'primevue/multiselect';
 import InputNumber from 'primevue/inputnumber';
 import { createRouter, createWebHistory } from 'vue-router';
 import { routes } from './routes';
+import Dropdown from 'primevue/dropdown';
 
 const router = createRouter({
     history: createWebHistory(),
@@ -46,6 +47,7 @@ app.component('Row',Row);
 app.component('Checkbox',Checkbox);
 app.component('AutoComplete',AutoComplete); 
 app.component('MultiSelect',MultiSelect); 
+app.component('Dropdown',Dropdown);
 app.use(PrimeVue);
 app.use(router);
 app.mount('#app')

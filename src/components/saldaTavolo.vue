@@ -29,7 +29,7 @@
 </div>
 <br>
 
-<saldaOrdini :currentOrderInner="currentOrder2" :currentTableInner="currentTableInner"></saldaOrdini>
+<saldaOrdini :currentOrderInner="currentOrder2" :currentTableInner="currentTableInner" @custom-event="this.$emit('custom-event',$event)"></saldaOrdini>
 </template>
 
 <script lang="js">
@@ -64,6 +64,10 @@ import saldaOrdini from './saldaOrdini.vue';
         }
     },
     methods:{
+      updateDialog2(data){
+        console.log("siamo menu salda tavolo"," ", data.propValue)
+        this.$emit('custom-event',data.propValue);
+      },
       modaleChiudiTavolo(tavolo){
           this.headerModal=(!this.closingTableIsAllowed(tavolo.data.associatedOrder)===true)?"Errore":"ok";
           this.bodyModal=(!this.closingTableIsAllowed(tavolo.data.associatedOrder)===true)?"Impossibile chiudere tavolo, si prega di saldare conti":
@@ -114,12 +118,8 @@ import saldaOrdini from './saldaOrdini.vue';
           },
         closingTableIsAllowed(orderlist){
             return orderlist.every(order=> order.paid)
-        }  
-        
-      
-    
-        
         },
+        }
        
     
   }

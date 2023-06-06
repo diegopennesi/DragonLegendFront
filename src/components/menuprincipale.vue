@@ -7,7 +7,7 @@
 <div>
   <apritavolo v-if="apriTavoloShow"></apritavolo>
   <gestisciTavolo v-if="gestisciTavoloShow"></gestisciTavolo>
-  <saldatavolo v-if="saldatavoloShow"></saldatavolo>
+  <saldatavolo @custom-event="this.$emit('custom-event',$event)" v-if="saldatavoloShow" ></saldatavolo>
 </div>
 </template>
 
@@ -51,6 +51,10 @@ import saldatavolo from './saldaTavolo.vue';
         this.saldatavoloShow=true;
       },
     },
+    updateDialog(data){
+      console.log("siamo menu principale"," ", data.propValue)
+        this.$emit('custom-event',data.propValue);
+      },
     computed: {
 
     }

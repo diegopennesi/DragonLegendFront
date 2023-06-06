@@ -1,7 +1,8 @@
 <template lang="html">
 
-<Dialog class="modal" v-model:visible="modalvisible" :header="`Tavolo ${headerModal}`" :style="{ width: '100%' }" style="display: flex;" :position="'top'" :modal="true" :draggable="false">
+<Dialog class="modal" v-model:visible="modalvisible" :header="`${headerModal}`" :style="{ width: '100%' }" style="display: flex;" :position="'top'" :modal="true" :draggable="false">
   <p class="m-0" v-html="bodyModal"/>
+  <Button icon="pi pi-check" text rounded aria-label="Filter" label="Indietro" @click="modalvisible=false"  />
 </Dialog>
 <div class="outer">
 <Card class="card-component">
@@ -9,18 +10,20 @@
     </template>
       <template #title> Inserisci un nuovo oggetto in menu! </template>
     <template #content>
-    <div>
+    <div >
     <InputText type="text" v-model="newItem.itemName" placeholder="nome"> </InputText>
     <InputText type="text" v-model="newItem.description" placeholder="descrizione"> </InputText>
-    <InputNumber placeholder="costo" v-model="newItem.costo"> </InputNumber>
-    <MultiSelect type="text" :options="listOfMenuClass" v-model="newItem.menuClass" placeholder="menuClass" :maxSelectedLabels="1"> </MultiSelect>
+    <AutoComplete type="text" v-model="newItem.subChoice" placolder="opzioni"></AutoComplete>
+    <InputNumber :minFractionDigits="2" placeholder="costo" v-model="newItem.price"> </InputNumber>
+    <Dropdown type="text" editable :options="listOfMenuClass" v-model="newItem.menuClass" placeholder="menuClass"> </Dropdown>
     <InputText type="text" v-model="newItem.allergens" placeholder="allergeni"> </InputText>
 
     </div>
     </template>
     <template #footer>
-      <Button icon="pi pi-check" label="Aggiungi" text rounded aria-label="Filter" @click="test()" /> <!--che merda-->
-      <Button icon="pi pi-times" label="Cancella" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click=""/>
+      <Button icon="pi pi-check" label="Aggiungi" text rounded aria-label="Filter" @click="additem()" /> <!--che merda-->
+      <Button icon="pi pi-times" label="Cancella" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="clear()"/>
+      <Button icon="pi pi-times" label="test" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="test()"/>
 
     </template>
 
@@ -38,18 +41,23 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       this.getMenuList();
     },
     data () {
+      const defaultItem={
+  "itemName": "",
+  "subChoice": [],
+  "description": "",
+  "price": 0.0,
+  "menuClass": "",
+  "allergens": ""
+};
       return {
+        modalvisible:false,
         apiUrl: config.apiUrl,
         headerModal:"",
         bodyModal:"",
         menuItems:[],
-        listOfMenuClass:[],
-        newItem:{"itemName": "",
-        "subChoice": [],
-        "description": "",
-        "price": 0.0,
-        "menuClass": "",
-        "allergens":""}
+        listOfMenuClass:[],         
+        newItem: { ...defaultItem },
+        myProp:''
       }
     },
 
@@ -70,11 +78,34 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       this.listOfMenuClass = [...new Set(this.menuItems.map(item => item.menuClass))];
       console.log(this.listOfMenuClass)
       })
-      
-    
     },
     test(){
-      console.log(this.newItem)
+      const data={
+        propValue:{header:"TESTA ",footer:"PIEDE "}}
+        this.$emit('custom-event',data)
+      },
+    
+    async additem(){
+      const url = this.apiUrl+'/adm/menuItem';
+          const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      console.log("invio richiesta");
+      console.log(toRaw(this.newItem))
+      this.newItem.subChoice=this.newItem.subChoice.split(" ")
+      console.log(toRaw(this.newItem.subChoice))
+      const data=toRaw(this.newItem)
+      /*await axios.post(url,data,{headers}).then( response => {
+        this.modalvisible=true;
+        this.headerModal="Nuovo prodotto Inserito!"
+        this.clear()
+      });*/
+      
+    },
+    clear(){
+      this.newItem = { ...this.defaultItem };
     }
   }
 }

@@ -21,16 +21,12 @@
   <Column style="" field="price" header="price"></Column>
   <Column field="itemName" header="Nome"></Column>
   <Column v-modeldynamicValue field="extraInfo" header="extraInfo"></Column>
-
-
-
 </DataTable>
 <br>
 <div >
             <label for="currency-germany" class="font-bold block mb-2"> costo </label>
             <InputNumber v-model="this.amountToPa" inputId="currency-germany" mode="currency" currency="EUR" locale="de-DE" />
         </div><br>
-
         <Button icon="pi pi-check" label="Save" @click="save()" />
 </div>
   </template>
@@ -53,7 +49,7 @@ import {reactive, toRaw,computed} from 'vue';
     },
     data () {
       return {
-        headerModal:{'header':"","footer":""},
+        headerModal:{header:"",footer:""},
         modalvisible:false,
         apiUrl: config.apiUrl,
        amountToPa: 0.0
@@ -64,17 +60,15 @@ import {reactive, toRaw,computed} from 'vue';
       return currentOrderInner.extraInfo + currentOrderInner.subChoice
     }
   },
-    methods: {
-test(x){
-console.log(x)
-}
-    },
     computed: {
 
     },
     methods:{
-      test(variable){
-        console.log(variable)
+      updateDialog(){
+      const data={
+        propValue:{header:"Testone ",footer:"Piedone "}}
+        console.log("siamo menu salda ordine"," ", data.propValue)
+        this.$emit('custom-event',data)
       },
       calculateScontrino(currentorder){
       var order=toRaw(currentorder)
@@ -99,21 +93,27 @@ console.log(x)
       if (response.status === 200) {
       console.log(response.data);
       this.amountToPa=0,0
-      this.headerModal.header='ok'
-      this.bodyModal="Pagamento Riuscito"
+      this.headerModal.header='OK'
+      this.headerModal.footer='Pagamento Riuscito'
+      //this.headerModal.header='ok'
+      //this.bodyModal="Pagamento Riuscito"
       } else {
         console.log(response.data);
-        this.headerModal=response
-        this.bodyModal=response.data
+        this.headerModal.header=response.status
+        this.headerModal.footer=response.data
       }
       })
       .catch(error => {
         console.log('Errore nella chiamata:', error);
-        this.headerModal='ERROR'
-        this.bodyModal=error
+        this.headerModal.header='ERROR'
+        this.headerModal.footer=error.data
         });
       }
-      this.modalvisible=true
+      const data={
+        propValue:this.headerModal}
+        console.log("siamo menu salda ordine"," ", data.propValue)
+        this.$emit('custom-event',data)
+      //this.modalvisible=true
     }}
 }
 
