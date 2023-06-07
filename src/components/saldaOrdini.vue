@@ -49,7 +49,7 @@ import {reactive, toRaw,computed} from 'vue';
     },
     data () {
       return {
-        headerModal:{header:"",footer:""},
+        headerModal:{header:"",footer:"",isVisible:false},
         modalvisible:false,
         apiUrl: config.apiUrl,
        amountToPa: 0.0
@@ -108,13 +108,15 @@ import {reactive, toRaw,computed} from 'vue';
         this.headerModal.header='ERROR'
         this.headerModal.footer=error.data
         });
-      }
+      }this.headerModal.isVisible=true;
       const data={
+        
         propValue:this.headerModal}
         console.log("siamo menu salda ordine"," ", data.propValue)
         this.$emit('custom-event',data)
       //this.modalvisible=true
-    }}
+    }
+  }
 }
 
 

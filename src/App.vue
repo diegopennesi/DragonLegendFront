@@ -9,7 +9,6 @@
 <Button text rounded aria-label="Filter" label="Admin" @click="goToAdm('/adm')"/>
 <Button text rounded aria-label="Filter" label="Home" @click="goToAdm('/')"/>
 <Button text rounded aria-label="Filter" label="Novità" @click="goToAdm('/pp')"/>
-<Button text rounded aria-label="Filter" label="TEST ERROR" @click="TEST"/>
 </div>
 <hr>
 <div>
@@ -76,7 +75,7 @@ methods: {
       
     }
   },mounted () {
-  this.toggleFullscreen()
+  this.toggleFullscreen()//non funziona
 },
 }
 </script>

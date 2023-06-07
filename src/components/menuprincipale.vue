@@ -51,10 +51,6 @@ import saldatavolo from './saldaTavolo.vue';
         this.saldatavoloShow=true;
       },
     },
-    updateDialog(data){
-      console.log("siamo menu principale"," ", data.propValue)
-        this.$emit('custom-event',data.propValue);
-      },
     computed: {
 
     }

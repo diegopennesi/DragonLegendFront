@@ -1,9 +1,13 @@
 <template lang="html">
 
-<p>
-  {{ dialogComponent.header }} è l'header!
-  {{ dialogComponent.footer }} è il footer!!
-</p>
+<Dialog calss="modal" v-model:visible="dialogComponent.isVisible" :header="`${dialogComponent.header}`" :style="{ width: '50vw' }" :position="'top'" :modal="true" :draggable="false" >
+  <p class="m-0">
+    {{ dialogComponent.footer }}
+  </p>
+  <Button icon="pi pi-check" label="Indietro" @click="dialogComponent.isVisible=false" />
+  </Dialog>
+
+
 </template>
 
 <script lang="js">
@@ -13,7 +17,8 @@
     props: {dialogComponent:{type:Object,require:true,default: ()=>{
       return {
         header:"",
-        footer:""
+        footer:"",
+        isVisible:false
       }
     }}},
     mounted () {

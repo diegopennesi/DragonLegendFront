@@ -1,5 +1,5 @@
 <template lang="html">
-<img src="https://http.cat/404" style="width: 100vw;">
+<img src="https://www.talkcocksingsong.net/kernel/wp-content/uploads/2013/05/404-Error-Looks-like-You-have-Found-a-Dead-Link-Talk-Cock-Sing-Song-01.jpg" style="width: 100vw;">
 </template>
 <script lang="js">
   export default {

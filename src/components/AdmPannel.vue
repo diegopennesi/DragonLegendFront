@@ -23,8 +23,6 @@
     <template #footer>
       <Button icon="pi pi-check" label="Aggiungi" text rounded aria-label="Filter" @click="additem()" /> <!--che merda-->
       <Button icon="pi pi-times" label="Cancella" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="clear()"/>
-      <Button icon="pi pi-times" label="test" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="test()"/>
-
     </template>
 
 </Card>
@@ -56,7 +54,7 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
         bodyModal:"",
         menuItems:[],
         listOfMenuClass:[],         
-        newItem: { ...defaultItem },
+        newItem: { ...defaultItem },//così posso resettare agilmente avendo la stessa struttura
         myProp:''
       }
     },
