@@ -8,7 +8,7 @@
 <Card class="card-component">
     <template #header>
     </template>
-      <template #title> Inserisci un nuovo oggetto in menu! </template>
+      <template #title> inserimento oggetto menu </template>
     <template #content>
     <div >
     <InputText type="text" v-model="newItem.itemName" placeholder="nome"> </InputText>
@@ -24,7 +24,24 @@
       <Button icon="pi pi-check" label="Aggiungi" text rounded aria-label="Filter" @click="additem()" /> <!--che merda-->
       <Button icon="pi pi-times" label="Cancella" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="clear()"/>
     </template>
+</Card>
+<Card class="card-component">
+  <template #header>
+  </template>
+  <template #title> elimina articolo</template>
+  <template #content>
+    <DataTable :value="menuItems" :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="updateDialog">
+      <Column field="itemName" header="Nome"></Column>
+      <Column header="elimina">
+          <template #body="ItemOfmenuItems">
+      <Button icon="pi pi-times" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="deleteItemOfItem(ItemOfmenuItems.data)"/>
+      </template>
+      </Column>
+    </DataTable>
+  </template>
+  <template #footer>
 
+  </template>
 </Card>
 </div>
 </template>
@@ -77,12 +94,23 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       console.log(this.listOfMenuClass)
       })
     },
-    test(){
-      const data={
-        propValue:{header:"TESTA ",footer:"PIEDE "}}
-        this.$emit('custom-event',data)
+    test(event){
+      console.log(event.data)
       },
-    
+      updateDialog(event){
+      const data={
+        propValue:{header:event.data.itemName,
+          footer:
+          event.data.description+"\n"+
+          event.data.price+"\n"+
+          event.data.menuClass+"\n",isVisible:true
+      }}
+
+        this.$emit('custom-event',data)
+    } , 
+    deleteItemOfItem(data){
+      console.log(data.id)
+    },
     async additem(){
       const url = this.apiUrl+'/adm/menuItem';
           const headers = {
