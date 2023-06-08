@@ -30,7 +30,9 @@
   </template>
   <template #title> elimina articolo</template>
   <template #content>
-    <DataTable :value="menuItems" :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="updateDialog">
+    <AutoComplete v-model="searchValue" placeholder="Ricerca"  :optionLabel="Ricerca" @change="handleOptionSelection"
+      autocomplete="off" @input="search" @click="handleOptionSelection" class="w-full md:w-20rem"  />
+    <DataTable :value="filtredItems" :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="updateDialog">
       <Column field="itemName" header="Nome"></Column>
       <Column header="elimina">
           <template #body="ItemOfmenuItems">
@@ -65,17 +67,29 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
   "allergens": ""
 };
       return {
+        filtredItems:"",
         modalvisible:false,
         apiUrl: config.apiUrl,
         headerModal:"",
         bodyModal:"",
         menuItems:[],
+        searchValue:[],
+        selectedItem:ref({}),
         listOfMenuClass:[],         
         newItem: { ...defaultItem },//così posso resettare agilmente avendo la stessa struttura
         myProp:''
       }
     },
+    computed: {
+      selectedItemProperties: {
+    get() {
+      return this.selectedItem.value || {};
+    },
+    set(value) {
 
+      this.selectedItem.value = value;
+    },
+  },},
     methods: {
       getMenuList(){
           const url = this.apiUrl+'/adm/menuItem';
@@ -84,14 +98,10 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
         'user': 'SYSADMIN'
       };
-      console.log("invio richiesta");
        axios.get(url,{headers})
       .then(response=>{
         this.menuItems=toRaw(response.data)
-        console.log(toRaw(this.menuItems))
-        console.log("list of menu class?");
       this.listOfMenuClass = [...new Set(this.menuItems.map(item => item.menuClass))];
-      console.log(this.listOfMenuClass)
       })
     },
     test(event){
@@ -116,7 +126,7 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
         'user': 'SYSADMIN'
       };
-      console.log("invio richiesta");
+      console.log(url);
       await axios.delete(url,data,headers).then(response =>{
         const data={
         propValue:{header: response.status,
@@ -124,7 +134,7 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
           "Prodotto Eliminato",isVisible:true
       }}
         this.$emit('custom-event',data)
-        this.$forceUpdate();
+        this.clear()
       })
       
     },
@@ -144,12 +154,33 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
         this.modalvisible=true;
         this.headerModal="Nuovo prodotto Inserito!"
         this.clear()
-      });
-      
+       });
+     
     },
     clear(){
-      this.newItem = { ...this.defaultItem };
-    }
+      this.newItem = { ...this.defaultItem }
+      this.getMenuList()
+      this.filtredItems="";
+    },
+    handleOptionSelection(option){
+  const searchProd=(option.value!==undefined)?option.value:this.searchValue;
+ const itemBlank=
+  this.menuItems.filter(item =>{
+  return item.itemName===searchProd
+ })
+ console.log("oggetto caricato" )
+ console.log(itemBlank[0]);
+ this.selectedItem.value=(itemBlank[0])
+},
+search() {
+  setTimeout(()=>{
+  this.filtredItems = this.menuItems.filter(item => {
+    return (item.menuClass.toLowerCase().includes(this.searchValue.toLowerCase())!="")?item.menuClass.toLowerCase().includes(this.searchValue.toLowerCase()):item.itemName.toLowerCase().includes(this.searchValue.toLowerCase())
+
+    })
+    .map(item => item );  
+    console.log(toRaw(this.filtredItems))},50);
+}
   }
 }
 
@@ -180,5 +211,8 @@ margin-bottom: 3px !important
 }
 .p-inputnumber{
   margin-bottom: 3px !important
+}
+.pi-spin {
+  display: none !important
 }
 </style>

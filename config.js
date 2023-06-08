@@ -4,7 +4,7 @@ const config = {
   };
   
   // Imposta l'ambiente corrente
-  const environment = 'prod'; // Puoi impostare questa variabile esternamente al file di configurazione
+  const environment = 'dev'; // Puoi impostare questa variabile esternamente al file di configurazione
   
   if (environment === 'dev') {
     config.apiUrl = 'http://localhost:8080'; // URL del server locale di sviluppo
