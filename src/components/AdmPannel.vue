@@ -48,7 +48,7 @@
 <script lang="js">
 import axios from 'axios';
 import config from '/config.js'
-import {ref, toRaw,computed,reactive, VueElement } from 'vue';
+import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
   export default {
     name: 'AdmPannel',
     props: [],
@@ -101,15 +101,32 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       const data={
         propValue:{header:event.data.itemName,
           footer:
-          event.data.description+"\n"+
+          event.data.description +"\n"+
           event.data.price+"\n"+
           event.data.menuClass+"\n",isVisible:true
       }}
 
         this.$emit('custom-event',data)
     } , 
-    deleteItemOfItem(data){
+    async deleteItemOfItem(data){
       console.log(data.id)
+      const url = this.apiUrl+'/adm/menuItem'+"/"+data.id;
+          const headers = {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin':'*', // non serve mi sà eh
+        'user': 'SYSADMIN'
+      };
+      console.log("invio richiesta");
+      await axios.delete(url,data,headers).then(response =>{
+        const data={
+        propValue:{header: response.status,
+          footer:
+          "Prodotto Eliminato",isVisible:true
+      }}
+        this.$emit('custom-event',data)
+        this.$forceUpdate();
+      })
+      
     },
     async additem(){
       const url = this.apiUrl+'/adm/menuItem';
@@ -120,14 +137,14 @@ import {ref, toRaw,computed,reactive, VueElement } from 'vue';
       };
       console.log("invio richiesta");
       console.log(toRaw(this.newItem))
-      this.newItem.subChoice=this.newItem.subChoice.split(" ")
+      this.newItem.subChoice=(this.newItem.subChoice.length==0)?[]:this.newItem.subChoice.split(" ")
       console.log(toRaw(this.newItem.subChoice))
       const data=toRaw(this.newItem)
-      /*await axios.post(url,data,{headers}).then( response => {
+      await axios.post(url,data,{headers}).then( response => {
         this.modalvisible=true;
         this.headerModal="Nuovo prodotto Inserito!"
         this.clear()
-      });*/
+      });
       
     },
     clear(){

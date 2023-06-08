@@ -71,7 +71,7 @@ import config from '/config.js'
         'user': 'SYSADMIN'
       };
       const data = {
-        nameId: this.nomeTavolo,
+        nameId: this.nomeTavolo.trim(),
         extraInfo: this.extraInfo
       };
       console.log(data);
