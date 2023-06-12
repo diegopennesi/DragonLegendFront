@@ -33,7 +33,12 @@
     <AutoComplete v-model="searchValue" placeholder="Ricerca"  :optionLabel="Ricerca" @change="handleOptionSelection"
       autocomplete="off" @input="search" @click="handleOptionSelection" class="w-full md:w-20rem"  />
     <DataTable :value="filtredItems" :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="updateDialog">
-      <Column field="itemName" header="Nome"></Column>
+      <Column field="itemName" header="Nome"  ></Column>
+      <Column header="disabilita">
+          <template #body="ItemOfmenuItems">
+      <InputSwitch v-model="ItemOfmenuItems.data.active" @click.stop="handleSwitchClick(ItemOfmenuItems.data)"/>
+      </template>
+      </Column>
       <Column header="elimina">
           <template #body="ItemOfmenuItems">
       <Button icon="pi pi-times" text rounded aria-label="Filter" severity="secondary" style="margin-left: 0.5em" @click="deleteItemOfItem(ItemOfmenuItems.data)"/>
@@ -58,13 +63,15 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
       this.getMenuList();
     },
     data () {
+      const checked = ref(false);
       const defaultItem={
   "itemName": "",
   "subChoice": [],
   "description": "",
   "price": 0.0,
   "menuClass": "",
-  "allergens": ""
+  "allergens": "",
+  "active":true
 };
       return {
         filtredItems:"",
@@ -161,6 +168,9 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
       this.newItem = { ...this.defaultItem }
       this.getMenuList()
       this.filtredItems="";
+    },
+    handleSwitchClick(item){
+        console.log(item.id);
     },
     handleOptionSelection(option){
   const searchProd=(option.value!==undefined)?option.value:this.searchValue;
