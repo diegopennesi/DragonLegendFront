@@ -13,7 +13,7 @@
 
   <InputText v-model="selectedItemProperties.price" disabled  placeholder="costo" />   <Button icon="pi pi-check" v-if="this.selectedItemProperties.itemName!=null" label="Aggiungi" @click="addComanda()" /> 
 
-  <DataTable :value="comandalist" :columnClasses='text-right' tableStyle="min-width: 5rem" >
+  <DataTable :value="comandalist" :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="eliminaFromComanda(oggettoComanda.data)" >
     <Column header="elimina">
     <template #body="oggettoComanda">
       <Button :icon="'pi pi-times'" :severity="'danger'" text rounded aria-label="Filter"  @click="TEST(oggettoComanda.data)" />
@@ -62,10 +62,10 @@
 <div class="inner">
   <DataTable :value="currentOrdergestisciTavolo"  :columnClasses='text-right' tableStyle="min-width: 5rem" @row-click="">
   <Column field="itemName" header="Nome"></Column>
-  <Column field="count" header="Unità"></Column>
+  <Column field="count" header="Unità" ></Column>
 </DataTable>
 <br>
-        <Button icon="pi pi-check" label="Save" @click="" />
+        <Button icon="pi pi-check" label="Manda in Stampa" disabled @click="" />
 </div>
   </template>
 </Card>
@@ -167,11 +167,12 @@ import config from '/config.js';
       console.log(ordini);
       await axios.put(url,data,{headers})
     }
-    this.getMenuList();
-      this.getTableList();
+    this.getTableList()
     this.modalvisible=false
+    this.getAssociatedOrder()
     },
         getAssociatedOrder(event){
+
         this.currentTableInner=(event.data.nameId);
         this.recalculateTrueOrderListGestisciTavolo(toRaw(event.data.associatedOrder));
         console.log("current order")
@@ -243,6 +244,9 @@ TEST(oggettoComanda){
   const index = this.comandalist.findIndex(item => item === oggettoComanda);
   if (index !== -1) {      this.comandalist.splice(index, 1);
 }
+  },
+  eliminaFromComanda(event){
+    console.log(event.data)
   }}
 }
   

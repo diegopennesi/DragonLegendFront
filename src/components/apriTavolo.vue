@@ -21,8 +21,8 @@
 </div>
     </template>
     <template #footer>
-        <Button icon="pi pi-check" label="Save" @click="save()" />
-        <Button icon="pi pi-times" label="Cancel" severity="secondary" style="margin-left: 0.5em" @click="reset()"/>
+        <Button icon="pi pi-check" text rounded aria-label="Filter" label="Save" @click="save()" />
+        <Button icon="pi pi-times" text rounded aria-label="Filter" label="Cancel" severity="secondary" style="margin-left: 0.5em" @click="reset()"/>
     </template>
 </Card>
 </div>
