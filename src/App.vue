@@ -8,7 +8,7 @@
 <Button text rounded aria-label="Filter" @click="toggleFullscreen">Fullscreen</Button>
 <Button text rounded aria-label="Filter" label="Admin" @click="goToAdm('/adm')"/>
 <Button text rounded aria-label="Filter" label="Home" @click="goToAdm('/')"/>
-<Button text rounded aria-label="Filter" label="Novità" @click="goToAdm('/pp')"/>
+<Button text rounded aria-label="Filter" label="Novità" @click="goToAdm('/changelog')"/>
 </div>
 <hr>
 <div>

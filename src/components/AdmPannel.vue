@@ -11,10 +11,10 @@
       <template #title> inserimento oggetto menu </template>
     <template #content>
     <div >
-    <InputText type="text" v-model="newItem.itemName" placeholder="nome"> </InputText>
+    <InputText type="text" v-model="newItem.itemName" placeholder="nome" :class="{'p-invalid': formSubmitted && !newItem.itemName}"> </InputText>
     <InputText type="text" v-model="newItem.description" placeholder="descrizione"> </InputText>
     <AutoComplete type="text" v-model="newItem.subChoice" placolder="opzioni"></AutoComplete>
-    <InputNumber :minFractionDigits="2" placeholder="costo" v-model="newItem.price"> </InputNumber>
+    <InputNumber :minFractionDigits="2" placeholder="costo" v-model="newItem.price" :class="{'p-invalid': formSubmitted && newItem.price<=0.0}"> </InputNumber>
     <Dropdown type="text" editable :options="listOfMenuClass" v-model="newItem.menuClass" placeholder="menuClass"> </Dropdown>
     <InputText type="text" v-model="newItem.allergens" placeholder="allergeni"> </InputText>
 
@@ -55,6 +55,7 @@
 <script lang="js">
 import axios from 'axios';
 import config from '/config.js'
+import { cloneDeep } from 'lodash';
 import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
   export default {
     name: 'AdmPannel',
@@ -74,7 +75,8 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
   "active":true
 };
       return {
-        filtredItems:"",
+        formSubmitted:"",
+        filtredItems:[],
         modalvisible:false,
         apiUrl: config.apiUrl,
         headerModal:"",
@@ -83,7 +85,7 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
         searchValue:[],
         selectedItem:ref({}),
         listOfMenuClass:[],         
-        newItem: { ...defaultItem },//così posso resettare agilmente avendo la stessa struttura
+        newItem: {...defaultItem},//così posso resettare agilmente avendo la stessa struttura
         myProp:''
       }
     },
@@ -126,26 +128,33 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
         this.$emit('custom-event',data)
     } , 
     async deleteItemOfItem(data){
-      console.log(data.id)
       const url = this.apiUrl+'/adm/menuItem'+"/"+data.id;
           const headers = {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin':'*', // non serve mi sà eh
         'user': 'SYSADMIN'
       };
-      console.log(url);
       await axios.delete(url,data,headers).then(response =>{
-        const data={
+        const datarequest={
         propValue:{header: response.status,
           footer:
           "Prodotto Eliminato",isVisible:true
-      }}
-        this.$emit('custom-event',data)
-        this.clear()
-      })
+        }}
+        this.$emit('custom-event',datarequest)
+        const itemIndex = this.filtredItems.findIndex((item) => item.id === data.id);
+
+        if (itemIndex !== -1) {
+          console.log(itemIndex)
+          this.filtredItems.splice(itemIndex, 1);
+      }
+    })
       
     },
     async additem(){
+      const formvalid = this.submitform()
+      console.log(formvalid)
+      if(!formvalid) { this.modalEmitCreator("Errore","Campi obbligatori",true); return}
+      
       const url = this.apiUrl+'/adm/menuItem';
           const headers = {
         'Content-Type': 'application/json',
@@ -154,7 +163,8 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
       };
       console.log("invio richiesta");
       console.log(toRaw(this.newItem))
-      this.newItem.subChoice=(this.newItem.subChoice.length==0)?[]:this.newItem.subChoice.split(" ")
+      this.newItem.subChoice=(this.newItem.subChoice.length>=0)?[]:this.newItem.subChoice.split(",")
+      console.log("newitem!")
       console.log(toRaw(this.newItem.subChoice))
       const data=toRaw(this.newItem)
       await axios.post(url,data,{headers}).then( response => {
@@ -165,9 +175,12 @@ import {ref, toRaw,computed,reactive, VueElement, onMounted } from 'vue';
      
     },
     clear(){
-      this.newItem = { ...this.defaultItem }
+      this.newItem ={...this.defaultItem};
+      this.newItem.subChoice=[];
+      this.newItem.price=0.0
       this.getMenuList()
       this.filtredItems="";
+      this.formSubmitted=false;
     },
     handleSwitchClick(item){
         console.log(item.id);
@@ -190,6 +203,21 @@ search() {
     })
     .map(item => item );  
     console.log(toRaw(this.filtredItems))},50);
+},
+submitform(){
+  if(!this.newItem.itemName || !this.newItem.price<=0.0){
+    this.formSubmitted=true;
+    return false;
+  } return true;
+},
+modalEmitCreator(headerMessage,footerMessage, visibleTrueFalse ){
+  const datarequest={
+        propValue:{
+          header: headerMessage,
+          footer: footerMessage,
+          isVisible:visibleTrueFalse
+        }}
+        this.$emit('custom-event',datarequest)
 }
   }
 }
@@ -225,4 +253,5 @@ margin-bottom: 3px !important
 .pi-spin {
   display: none !important
 }
+
 </style>
