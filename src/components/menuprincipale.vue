@@ -7,7 +7,7 @@
 <div>
   <apritavolo v-if="apriTavoloShow"></apritavolo>
   <gestisciTavolo v-if="gestisciTavoloShow"></gestisciTavolo>
-  <saldatavolo v-if="saldatavoloShow"></saldatavolo>
+  <saldatavolo @custom-event="this.$emit('custom-event',$event)" v-if="saldatavoloShow" ></saldatavolo>
 </div>
 </template>
 

@@ -14,8 +14,17 @@ import Checkbox from 'primevue/checkbox';
 import AutoComplete from 'primevue/autocomplete';
 import MultiSelect from 'primevue/multiselect';
 import InputNumber from 'primevue/inputnumber';
+import { createRouter, createWebHistory } from 'vue-router';
+import { routes } from './routes';
+import Dropdown from 'primevue/dropdown';
+import InputSwitch from 'primevue/inputswitch';
 
 
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+  });
+  
 
 //theme
 import "primevue/resources/themes/md-dark-indigo/theme.css";     
@@ -27,6 +36,7 @@ import "primevue/resources/primevue.min.css";
 import "primeicons/primeicons.css";
 
 const app = createApp(App);
+app.component('InputSwitch',InputSwitch);
 app.component('InputNumber',InputNumber);
 app.component('Button', Button);
 app.component('TabMenu',TabMenu);
@@ -40,5 +50,7 @@ app.component('Row',Row);
 app.component('Checkbox',Checkbox);
 app.component('AutoComplete',AutoComplete); 
 app.component('MultiSelect',MultiSelect); 
+app.component('Dropdown',Dropdown);
 app.use(PrimeVue);
+app.use(router);
 app.mount('#app')

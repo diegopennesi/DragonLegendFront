@@ -1,13 +1,18 @@
 <template class="bk">
   <div>
-
+<dialognoticecomponent :dialogComponent="myProp"></dialognoticecomponent>
     
 
 <img src="./assets/logoDl.png" style="max-width: 25%">
-<br> <button @click="toggleFullscreen">fullscreen on\off</button>
+<div style="text-align: justify;">
+<Button text rounded aria-label="Filter" @click="toggleFullscreen">Fullscreen</Button>
+<Button text rounded aria-label="Filter" label="Admin" @click="goToAdm('/adm')"/>
+<Button text rounded aria-label="Filter" label="Home" @click="goToAdm('/')"/>
+<Button text rounded aria-label="Filter" label="Novità" @click="goToAdm('/changelog')"/>
+</div>
 <hr>
 <div>
-<menuprincipale></menuprincipale>
+  <router-view @custom-event="updateDialog"></router-view>
 </div>
 </div>
 
@@ -16,14 +21,18 @@
 
 <script>
 import menuprincipale from './components/menuprincipale.vue';
-
-
-
+import dialognoticecomponent from './components/dialogNoticeComponent.vue';
+import { routes } from './routes';
 
 export default {
   name: 'App',
   components: {
-    menuprincipale
+    menuprincipale,
+    dialognoticecomponent
+},data() {
+return{
+myProp: ''
+}
 },
 
 methods: {
@@ -56,8 +65,17 @@ methods: {
         }
       }
     },
+    goToAdm(url){
+      this.$router.push(url);
+    },
+    updateDialog(data){
+        this.myProp=data.propValue;
+      },
+    TEST(){
+      
+    }
   },mounted () {
-  this.toggleFullscreen()
+  this.toggleFullscreen()//non funziona
 },
 }
 </script>
